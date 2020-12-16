@@ -16,10 +16,10 @@ namespace DelegatesAndEvents
         /// <inheritdoc cref="IObservableList{T}.ElementChanged" />
         public event ListElementChangeCallback<TItem> ElementChanged;
 
-        private List<TItem> list = new List<TItem>();
+        private List<TItem> _list = new List<TItem>();
 
         /// <inheritdoc cref="ICollection{T}.Count" />
-        public int Count => this.list.Count;
+        public int Count => this._list.Count;
 
         /// <inheritdoc cref="ICollection{T}.IsReadOnly" />
         public bool IsReadOnly => false;
@@ -27,71 +27,68 @@ namespace DelegatesAndEvents
         /// <inheritdoc cref="IList{T}.this" />
         public TItem this[int index]
         {
-            get => this.list[index];
+            get => this._list[index];
             set
             {
-                this.ElementChanged(this, value, this.list[index], index);
-                this.list[index] = value;
+                this.ElementChanged?.Invoke(this, value, this._list[index], index);
+                this._list[index] = value;
             }
         }
 
         /// <inheritdoc cref="IEnumerable{T}.GetEnumerator" />
-        public IEnumerator<TItem> GetEnumerator() => this.list.GetEnumerator();
+        public IEnumerator<TItem> GetEnumerator() => this._list.GetEnumerator();
 
         /// <inheritdoc cref="IEnumerable.GetEnumerator" />
-        IEnumerator IEnumerable.GetEnumerator() => this.list.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => this._list.GetEnumerator();
 
         /// <inheritdoc cref="ICollection{T}.Add" />
         public void Add(TItem item)
         {
-            var index = this.list.Count;
-            this.list.Add(item);
+            var index = this._list.Count;
+            this._list.Add(item);
             this.ElementInserted?.Invoke(this, item, index);
         }
 
         /// <inheritdoc cref="ICollection{T}.Clear" />
         public void Clear()
         {
-            for (var i = 0; i < this.list.Count; i++)
+            for (var i = 0; i < this._list.Count; i++)
             {
-                this.Remove(this.list[i]);
+                this.Remove(this._list[0]);
             }
         }
 
         /// <inheritdoc cref="ICollection{T}.Contains" />
-        public bool Contains(TItem item) => this.list.Contains(item);
+        public bool Contains(TItem item) => this._list.Contains(item);
 
         /// <inheritdoc cref="ICollection{T}.CopyTo" />
-        public void CopyTo(TItem[] array, int arrayIndex)
-        {
-            throw new System.NotImplementedException();
-        }
+        public void CopyTo(TItem[] array, int arrayIndex) => this._list.CopyTo(array, arrayIndex);
 
         /// <inheritdoc cref="ICollection{T}.Remove" />
         public bool Remove(TItem item)
         {
-            var index = list.IndexOf(item);
-            if (!this.list.Remove(item)) return false;
+            var index = _list.IndexOf(item);
+            if (!this._list.Remove(item)) return false;
             this.ElementRemoved?.Invoke(this, item, index);
             return true;
 
         }
 
         /// <inheritdoc cref="IList{T}.IndexOf" />
-        public int IndexOf(TItem item) => this.list.IndexOf(item);
+        public int IndexOf(TItem item) => this._list.IndexOf(item);
 
         /// <inheritdoc cref="IList{T}.RemoveAt" />
         public void Insert(int index, TItem item)
         {
-            this.list.Insert(index, item);
+            this._list.Insert(index, item);
             this.ElementInserted?.Invoke(this, item, index);
         }
 
         /// <inheritdoc cref="IList{T}.RemoveAt" />
         public void RemoveAt(int index)
         {
-            var elem = this.list[index];
-            this.list.RemoveAt(index);
+            var elem = this._list[index];
+            this._list.RemoveAt(index);
             this.ElementRemoved?.Invoke(this, elem, index);
         }
 
@@ -108,20 +105,16 @@ namespace DelegatesAndEvents
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(list, other.list);
+            return Equals(_list, other._list);
         }
 
         /// <inheritdoc cref="object.GetHashCode" />
-        public override int GetHashCode()
-        {
-            return (list != null ? list.GetHashCode() : 0);
-        }
+        public override int GetHashCode() => (_list != null ? _list.GetHashCode() : 0);
 
         /// <inheritdoc cref="object.ToString" />
         public override string ToString()
         {
-            // TODO improve
-            return base.ToString();
+            return $"{nameof(_list)}: {_list}";
         }
     }
 }
