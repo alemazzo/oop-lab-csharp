@@ -6,15 +6,15 @@ namespace Indexers
     [TestClass]
     public class Map2DTests
     {
-        private readonly int[] seven = new int[] { 7, 14, 21, 28, 35, 42, 49, 56, 63, 70 };
-        private IMap2D<int, int, int> pitagoricTable;
+        private readonly int[] _seven = new int[] { 7, 14, 21, 28, 35, 42, 49, 56, 63, 70 };
+        private IMap2D<int, int, int> _pitagoricTable;
 
         // Called once before each test after the constructor
         [TestInitialize]
         public void TestInitialize()
         {
-            this.pitagoricTable = new Map2D<int, int, int>();
-            this.pitagoricTable.Fill(
+            this._pitagoricTable = new Map2D<int, int, int>();
+            this._pitagoricTable.Fill(
                 Enumerable.Range(1, 10),
                 Enumerable.Range(1, 10),
                 (i, j) => i * j);
@@ -25,14 +25,14 @@ namespace Indexers
         {
             for (int i = 1; i <= 10; i++)
             {
-                Assert.AreEqual(i * i, this.pitagoricTable[i, i]);
+                Assert.AreEqual(i * i, this._pitagoricTable[i, i]);
             }
         }
 
         [TestMethod]
         public void GetRowTest()
         {
-            if (!this.pitagoricTable.GetRow(7).Select(t => t.Item2).SequenceEqual(this.seven))
+            if (!this._pitagoricTable.GetRow(7).Select(t => t.Item2).SequenceEqual(this._seven))
             {
                 Assert.Fail("Wrong implementation");
             }
@@ -41,7 +41,7 @@ namespace Indexers
         [TestMethod]
         public void GetColumnTest()
         {
-            if (!this.pitagoricTable.GetColumn(7).Select(t => t.Item2).SequenceEqual(this.seven))
+            if (!this._pitagoricTable.GetColumn(7).Select(t => t.Item2).SequenceEqual(this._seven))
             {
                 Assert.Fail("Wrong implementation");
             }
