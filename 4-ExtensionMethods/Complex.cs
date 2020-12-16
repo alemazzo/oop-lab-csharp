@@ -34,15 +34,13 @@ namespace ExtensionMethods
         public double Modulus => Math.Sqrt(Math.Pow(this.Real, 2) + Math.Pow(this.Imaginary, 2));
 
         /// <inheritdoc cref="IComplex.Phase"/>
-        public double Phase => this._re / this._im;
+        public double Phase => Math.Atan2(this._im, this._re);
 
         /// <inheritdoc cref="IComplex.ToString"/>
         public override string ToString()
         {
-            // TODO improve
-            return base.ToString();
+            return $"{nameof(Real)}: {Real}, {nameof(Imaginary)}: {Imaginary}";
         }
-
 
         /// <inheritdoc cref="object.GetHashCode"/>
         public override int GetHashCode()
