@@ -50,10 +50,6 @@ namespace Properties
             // TODO understand string interpolation
             return $"{this.GetType().Name}(Name={this.Name}, Seed={this.Seed}, Ordinal={this.Ordinal})";
         }
-
-        // TODO generate Equals(object obj)
-
-        // TODO generate GetHashCode()
         private bool Equals(Card other)
         {
             return _seed == other._seed && _name == other._name && _ordinal == other._ordinal;
