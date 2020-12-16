@@ -1,3 +1,5 @@
+using Microsoft.VisualBasic;
+
 namespace Indexers
 {
     using System;
@@ -6,7 +8,7 @@ namespace Indexers
     using System.Linq;
 
     /// <inheritdoc cref="IMap2D{TKey1,TKey2,TValue}" />
-    public class Map2D<TKey1, TKey2, TValue> : IMap2D<TKey1, TKey2, TValue>
+    public class Map2D<TKey1, TKey2, TValue> : IMap2D<TKey1, TKey2, TValue>, IEquatable<Map2D<TKey1, TKey2, TValue>>
     {
         private List<Tuple<TKey1, TKey2, TValue>> map = new List<Tuple<TKey1, TKey2, TValue>>();
 
@@ -17,7 +19,6 @@ namespace Indexers
         public TValue this[TKey1 key1, TKey2 key2]
         {
             get => this.map.FindAll(x => x.Item1.Equals(key1)).Find(x => x.Item2.Equals(key2)).Item3;
-
             set => this.map.Add(new Tuple<TKey1, TKey2, TValue>(key1, key2, value));
         }
 
@@ -40,14 +41,11 @@ namespace Indexers
         }
 
         /// <inheritdoc cref="IMap2D{TKey1, TKey2, TValue}.GetElements" />
-        public IList<Tuple<TKey1, TKey2, TValue>> GetElements() => this.map;
-        // copia difensiva
+        public IList<Tuple<TKey1, TKey2, TValue>> GetElements() => this.map.ToList();
 
         /// <inheritdoc cref="IMap2D{TKey1, TKey2, TValue}.Fill(IEnumerable{TKey1}, IEnumerable{TKey2}, Func{TKey1, TKey2, TValue})" />
         public void Fill(IEnumerable<TKey1> keys1, IEnumerable<TKey2> keys2, Func<TKey1, TKey2, TValue> generator)
         {
-            // cast to list
-
             foreach (var key1 in keys1)
             {
                 foreach (var key2 in keys2)
@@ -55,38 +53,38 @@ namespace Indexers
                     this.map.Add(new Tuple<TKey1, TKey2, TValue>(key1, key2, generator(key1, key2)));
                 }
             }
-
-
-
         }
 
-        // TODO: rigenerare Equals
-        /// <inheritdoc cref="IEquatable{T}.Equals(T)" />
+        public bool Equals(Map2D<TKey1, TKey2, TValue> other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(map, other.map);
+        }
+
         public bool Equals(IMap2D<TKey1, TKey2, TValue> other)
         {
-            // TODO: improve
-            return base.Equals(other);
+            return this.Equals((object)other);
         }
 
         /// <inheritdoc cref="object.Equals(object?)" />
         public override bool Equals(object obj)
         {
-            // TODO: improve
-            return base.Equals(obj);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Map2D<TKey1, TKey2, TValue>) obj);
         }
 
-        /// <inheritdoc cref="object.GetHashCode"/>
         public override int GetHashCode()
         {
-            // TODO: improve
-            return base.GetHashCode();
+            return (map != null ? map.GetHashCode() : 0);
         }
 
         /// <inheritdoc cref="IMap2D{TKey1, TKey2, TValue}.ToString"/>
         public override string ToString()
         {
-            // TODO: improve
-            return base.ToString();
+            return $"{nameof(map)}: {map}, {nameof(NumberOfElements)}: {NumberOfElements}";
         }
     }
 }
