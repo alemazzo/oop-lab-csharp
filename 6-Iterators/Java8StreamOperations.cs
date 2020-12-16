@@ -1,3 +1,7 @@
+using System.Collections.Specialized;
+using System.Linq;
+using Microsoft.VisualBasic;
+
 namespace Iterators
 {
     using System;
@@ -14,10 +18,8 @@ namespace Iterators
         /// <param name="sequence">the sequence.</param>
         /// <param name="consumer">a non-interfering action to perform on the elements.</param>
         /// <typeparam name="TAny">the type of the items in the sequence.</typeparam>
-        public static void ForEach<TAny>(this IEnumerable<TAny> sequence, Action<TAny> consumer)
-        {
-            throw new NotImplementedException();
-        }
+        public static void ForEach<TAny>(this IEnumerable<TAny> sequence, Action<TAny> consumer) =>
+            sequence.ToList().ForEach(consumer);
 
         /// <summary>
         /// Returns an enumerable consisting of the elements of the specified <paramref name="sequence"/>,
@@ -29,7 +31,8 @@ namespace Iterators
         /// <returns>the new sequence.</returns>
         public static IEnumerable<TAny> Peek<TAny>(this IEnumerable<TAny> sequence, Action<TAny> consumer)
         {
-            throw new NotImplementedException();
+            sequence.ForEach(consumer);
+            return sequence;
         }
 
         /// <summary>
@@ -41,10 +44,9 @@ namespace Iterators
         /// <typeparam name="TAny">the type of the items in the sequence.</typeparam>
         /// <typeparam name="TOther">The element type of the new sequence.</typeparam>
         /// <returns>the new sequence.</returns>
-        public static IEnumerable<TOther> Map<TAny, TOther>(this IEnumerable<TAny> sequence, Func<TAny, TOther> mapper)
-        {
-            throw new NotImplementedException();
-        }
+        public static IEnumerable<TOther>
+            Map<TAny, TOther>(this IEnumerable<TAny> sequence, Func<TAny, TOther> mapper) =>
+            sequence.Select(mapper);
 
         /// <summary>
         /// Returns a stream consisting of the elements of this stream that match the given predicate.
@@ -55,10 +57,8 @@ namespace Iterators
         /// </param>
         /// <typeparam name="TAny">the type of the items in the sequence.</typeparam>
         /// <returns>the new sequence.</returns>
-        public static IEnumerable<TAny> Filter<TAny>(this IEnumerable<TAny> sequence, Predicate<TAny> predicate)
-        {
-            throw new NotImplementedException();
-        }
+        public static IEnumerable<TAny> Filter<TAny>(this IEnumerable<TAny> sequence, Predicate<TAny> predicate) =>
+            sequence.Where(x => predicate(x));
 
         /// <summary>
         /// Returns a new sequence containing a tuple with each element and its index in the original sequence.
@@ -68,8 +68,10 @@ namespace Iterators
         /// <returns>the new sequence.</returns>
         public static IEnumerable<Tuple<int, TAny>> Indexed<TAny>(this IEnumerable<TAny> sequence)
         {
-            throw new NotImplementedException();
+            var list = sequence.ToList();
+            return list.Select(x => new Tuple<int, TAny>(list.IndexOf(x), x));
         }
+
 
         /// <summary>
         /// Performs a reduction on the elements of the <paramref name="sequence"/>, using a <paramref name="reducer"/>
