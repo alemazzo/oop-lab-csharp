@@ -12,6 +12,10 @@ namespace Iterators
         /// <inheritdoc cref="Program" />
         public static void Main()
         {
+
+            var elem = Java8StreamOperations.Range(0, 4).ToList();
+            var sum = elem.Reduce(0, (x, y) => x + y);
+            Console.WriteLine("SUM :  " + sum);
             const int len = 50;
             int?[] numbers = new int?[len];
             Random rand = new Random();
@@ -24,34 +28,25 @@ namespace Iterators
             }
 
             // TODO rewrite using methods from Java8StreamOperations
+
             IDictionary<int, int> occurrences = numbers
-                .Select(optN => {
+                .Map(optN => {
                     Console.Write(optN.ToString() + ",");
                     return optN;
                 })
-                .Skip(1)
-                .Take(len - 2)
-                .Where(optN => optN.HasValue)
-                .Select(optN => optN.Value)
-                .Aggregate(new Dictionary<int, int>(), (d, n) => {
-                    if (!d.ContainsKey(n))
-                    {
-                        d[n] = 1;
-                    }
-                    else
-                    {
-                        d[n]++;
-                    }
-
+                .SkipSome(1)
+                .TakeSome(len - 2)
+                .Filter(optN => optN.HasValue)
+                .Map(optN => optN.Value)
+                .Reduce(new Dictionary<int, int>(), (d, n) =>
+                {
+                    d[n] = d.ContainsKey(n) ? d[n] + 1 : 1;
                     return d;
                 });
 
             Console.WriteLine();
 
-            foreach (KeyValuePair<int, int> kv in occurrences)
-            {
-                Console.WriteLine(kv);
-            }
+            occurrences.ForEach(x => Console.WriteLine(x));
         }
     }
 }
