@@ -13,9 +13,6 @@ namespace Iterators
         public static void Main()
         {
 
-            var elem = Java8StreamOperations.Range(0, 4).ToList();
-            var sum = elem.Reduce(0, (x, y) => x + y);
-            Console.WriteLine("SUM :  " + sum);
             const int len = 50;
             int?[] numbers = new int?[len];
             Random rand = new Random();
@@ -26,8 +23,6 @@ namespace Iterators
                     numbers[i] = rand.Next(len);
                 }
             }
-
-            // TODO rewrite using methods from Java8StreamOperations
 
             IDictionary<int, int> occurrences = numbers
                 .Map(optN => {
