@@ -31,8 +31,11 @@ namespace Iterators
         /// <returns>the new sequence.</returns>
         public static IEnumerable<TAny> Peek<TAny>(this IEnumerable<TAny> sequence, Action<TAny> consumer)
         {
-            sequence.ToList().ForEach(consumer);
-            return sequence;
+            foreach (var elem in sequence)
+            {
+                consumer(elem);
+                yield return elem;
+            }
         }
 
         /// <summary>
@@ -45,8 +48,7 @@ namespace Iterators
         /// <typeparam name="TOther">The element type of the new sequence.</typeparam>
         /// <returns>the new sequence.</returns>
         public static IEnumerable<TOther>
-            Map<TAny, TOther>(this IEnumerable<TAny> sequence, Func<TAny, TOther> mapper) =>
-            sequence.Select(mapper);
+            Map<TAny, TOther>(this IEnumerable<TAny> sequence, Func<TAny, TOther> mapper) => sequence.Select(mapper);
 
         /// <summary>
         /// Returns a stream consisting of the elements of this stream that match the given predicate.
@@ -58,7 +60,7 @@ namespace Iterators
         /// <typeparam name="TAny">the type of the items in the sequence.</typeparam>
         /// <returns>the new sequence.</returns>
         public static IEnumerable<TAny> Filter<TAny>(this IEnumerable<TAny> sequence, Predicate<TAny> predicate) =>
-            sequence.Where(x => predicate(x));
+            sequence.Where(new Func<TAny, bool>(predicate));
 
         /// <summary>
         /// Returns a new sequence containing a tuple with each element and its index in the original sequence.
@@ -68,8 +70,11 @@ namespace Iterators
         /// <returns>the new sequence.</returns>
         public static IEnumerable<Tuple<int, TAny>> Indexed<TAny>(this IEnumerable<TAny> sequence)
         {
-            var list = sequence.ToList();
-            return list.Select(x => new Tuple<int, TAny>(list.IndexOf(x), x));
+            var index = 0;
+            foreach (var elem in sequence)
+            {
+                yield return new Tuple<int, TAny>(index++, elem);
+            }
         }
 
 
@@ -101,10 +106,18 @@ namespace Iterators
         /// <returns>the new sequence.</returns>
         public static IEnumerable<TAny> SkipWhile<TAny>(this IEnumerable<TAny> sequence, Predicate<TAny> predicate)
         {
-            var list = sequence.ToList();
-            var elem = list.First(new Func<TAny, bool>(x => !predicate(x)));
-            var index = list.IndexOf(elem);
-            return list.SkipSome(index);
+            var started = false;
+            foreach (var elem in sequence)
+            {
+                if (started)
+                {
+                    yield return elem;
+                }
+                else
+                {
+                    started = !predicate(elem);
+                }
+            }
         }
 
         /// <summary>
@@ -131,10 +144,17 @@ namespace Iterators
         /// <returns>the new sequence.</returns>
         public static IEnumerable<TAny> TakeWhile<TAny>(this IEnumerable<TAny> sequence, Predicate<TAny> predicate)
         {
-            var list = sequence.ToList();
-            var elem = list.First(new Func<TAny, bool>(x => !predicate(x)));
-            var index = list.IndexOf(elem);
-            return list.TakeSome(index);
+            foreach (var elem in sequence)
+            {
+                if (predicate(elem))
+                {
+                    yield return elem;
+                }
+                else
+                {
+                    break;
+                }
+            }
         }
 
         /// <summary>
