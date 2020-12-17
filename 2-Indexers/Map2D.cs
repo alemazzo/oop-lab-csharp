@@ -46,13 +46,8 @@ namespace Indexers
         /// <inheritdoc cref="IMap2D{TKey1, TKey2, TValue}.Fill(IEnumerable{TKey1}, IEnumerable{TKey2}, Func{TKey1, TKey2, TValue})" />
         public void Fill(IEnumerable<TKey1> keys1, IEnumerable<TKey2> keys2, Func<TKey1, TKey2, TValue> generator)
         {
-            foreach (var key1 in keys1)
-            {
-                foreach (var key2 in keys2)
-                {
-                    this.map.Add(new Tuple<TKey1, TKey2, TValue>(key1, key2, generator(key1, key2)));
-                }
-            }
+            keys1.ToList().ForEach(key1 => keys2.ToList().ForEach(key2 =>
+                this.map.Add(new Tuple<TKey1, TKey2, TValue>(key1, key2, generator(key1, key2)))));
         }
 
         public bool Equals(Map2D<TKey1, TKey2, TValue> other)
